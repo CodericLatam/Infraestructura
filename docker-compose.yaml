@@ -5,13 +5,13 @@ services:
     stdin_open: true
     tty: true
     domainname: coderic.net
-    hostname: ruben
+##    hostname: ruben
     privileged: true
     networks:
       - mynetwork
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       update_config:
         parallelism: 0
         delay: 10s
@@ -28,7 +28,7 @@ services:
       - mynetwork
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       update_config:
         parallelism: 0
         delay: 10s
@@ -45,7 +45,7 @@ services:
       - mynetwork
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       update_config:
         parallelism: 0
         delay: 10s
@@ -65,6 +65,10 @@ services:
       - 8404:8404
     volumes:
       - "/home/neftaliyagua/dev/CodericLatam/architecture/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+    links:
+      - "ruben"
+      - "simeon"
+      - "levi"
     deploy:
       update_config:
         parallelism: 0
