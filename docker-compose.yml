@@ -1,7 +1,8 @@
 version: "3"
+name: "coderic"
 services:
   ruben: 
-    image: nginx:latest
+    image: httpd:latest
     stdin_open: true
     tty: true
     domainname: coderic.net
@@ -11,46 +12,19 @@ services:
       - mynetwork
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 100
       update_config:
         parallelism: 0
         delay: 10s
       restart_policy:
         condition: on-failure
-  simeon: 
-    image: nginx:latest
-    stdin_open: true
-    tty: true
-    domainname: coderic.net
-    hostname: simeon
-    privileged: true
-    networks:
-      - mynetwork
-    deploy:
-      mode: replicated
-      replicas: 3
-      update_config:
-        parallelism: 0
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-  levi: 
-    image: nginx:latest
-    stdin_open: true
-    tty: true
-    domainname: coderic.net
-    hostname: levi
-    privileged: true
-    networks:
-      - mynetwork
-    deploy:
-      mode: replicated
-      replicas: 3
-      update_config:
-        parallelism: 0
-        delay: 10s
-      restart_policy:
-        condition: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 5s
   juda: 
     image: haproxy:lts
     stdin_open: true
@@ -64,44 +38,25 @@ services:
       - 80:80
       - 8404:8404
     volumes:
-      - "/home/neftaliyagua/dev/CodericLatam/architecture/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+      -  ${PWD}/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     links:
-      - "ruben"
-      - "simeon"
-      - "levi"
+      - ruben
+    depends_on:
+      - ruben
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 5s
     deploy:
       update_config:
         parallelism: 0
         delay: 10s
       restart_policy:
         condition: on-failure
-##  levi: 
-##    image: fedora
-##    stdin_open: true
-##    tty: true
-##    domainname: coderic.net
-##    hostname: levi
-##    privileged: true
-##    networks:
-##      - host
-##  juda: 
-##    image: fedora
-##    stdin_open: true
-##    tty: true
-##    domainname: coderic.net
-##    hostname: juda
-##    privileged: true
-##    networks:
-##      - host
-##  dan: 
-##    image: fedora
-##    stdin_open: true
-##    tty: true
-##    domainname: coderic.net
-##    hostname: dan
-##    privileged: true
-##    networks:
-##      - host
+
 ##  neftali: 
 ##    image: fedora
 ##    stdin_open: true
